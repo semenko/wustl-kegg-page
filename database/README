@@ -1,0 +1,63 @@
+The KEGG mirror provided by the Center for Genome Sciences & Systems Biology.
+
+See: http://kegg.wustl.edu/
+
+We pay for an academic site license for Washington University.
+
+================================================================
+
+
+<For CGS Administrators -- Need to update KEGG?>
+
+KEGG updates every Wednesday JST. It's best to start an update /on Tuesday or Wednesday US CST/.
+
+If you start updating on a Saturday/Sunday/Monday, you may not finish before the next update window.
+
+##########
+# Mirror via lftp
+##########
+
+# Use lftp to mirror (WARNING: more than 2 parallel downloads will get you throttled!)
+# ** Open this in screen or tmux -- it will take 48+ hours **
+
+mkdir raw-mirrors/latest_kegg_version
+cp -pr raw-mirrors/old_version/* raw-mirrors/latest_kegg_version  (KEGG preserves times, so remember -p)
+cd raw-mirrors/latest_kegg_version
+
+lftp
+set ftp:list-options -a;
+open ftp://ftp.bioinformatics.jp/kegg/;
+mirror --delete --no-perms --verbose --parallel=2  (optionally, set --ignore-time if you've screwed up the -p)
+
+# If this stalls / fails, just stop and re-start the command.
+
+##########
+# Mirror again?
+##########
+
+You should see results like:
+
+> Total: 3563 directories, 34932 files, 0 symlinks
+> New: 523 files, 0 symlinks
+> Modified: 26855 files, 0 symlinks
+> 46774233001 bytes transferred in 128511 seconds (355.4K/s)
+> Removed: 39 directories, 0 files, 0 symlinks
+
+If you don't see that -- or you see an error -- run the lftp mirror commands ** a second time **
+(Sometimes, KEGG will be in an update cycle. Repeat until the repo is unchanged by an lftp sync.)
+
+##########
+# Build .gz
+##########
+
+e.g.
+tar cvzf ../builds/KEGG-2014-01-06.tar.gz 2014-01-06/
+
+##########
+# Update the site
+##########
+
+Update the paths to:
+- .tar.gz file
+- raw database
+- RELEASE file

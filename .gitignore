@@ -1,3 +1,6 @@
-.idea
+B.idea
 *~
-database
+database/*
+!database/README
+
+
